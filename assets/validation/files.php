@@ -1,6 +1,6 @@
 <?php
 
-require 'connect.php';
+require 'views/connect.php';
 
 $filename = $_FILES['file'];
 $allowed_extensions = array('.jpg', '.jpeg', '.png');

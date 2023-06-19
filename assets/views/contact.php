@@ -3,11 +3,11 @@
 require 'connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$name = $_POST['name'];
-	$fname = $_POST['fname'];
-	$email = $_POST['email'];
+	$name = $_POST['visitor_name'];
+	$fname = $_POST['visitor_fname'];
+	$email = $_POST['visitor_email'];
 	$file = $_POST['file'];
-	$desc = $_POST['desc'];
+	$desc = $_POST['visitor_message'];
 
 	if (isset($_POST)) {
 		$sql = 'INSERT INTO poulette (name, fname, email, file, desc) VALUES (?,?,?,?,?)';
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body class="bg-[url('../css/header.png')] flex flex-col items-center">
 	<main>
-		<h1 class="text-white text-4xl mb-11 mt-11 ">Contact support</h1>
+		<h1 class="text-white text-4xl mb-11 mt-11 text-center">Contact support</h1>
 		<div class="!z-5 relative flex flex-col rounded-[20px] max-w-[350px] md:max-w-[400px] bg-white bg-clip-border shadow-3xl
 		shadow-shadow-500 flex flex-col w-full !p-6 3xl:p-![18px] bg-white undefined">
 			<form action="./contact.php" method="post" enctype="multipart/form-data">
@@ -50,21 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					<input type="text" name="visitor_email" placeholder="john.doe@email.com" value="" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</div>
 
-				<!-- File à définir -->
 				<div class="mb-3">
 					<label for="file">File</label><br>
-					<input type="file" name="file" value="" accept="image/png, image/jpeg, image/jpg">
+					<input type="file" name="file" value="" accept=".png, .jpg, .gif" class="cursor-pointer">
 				</div>
-				<!-- File à définir -->
 
 				<div class="mb-3">
 					<label for="description">Description</label><br>
-					<textarea id="message" name="visitor_message" placeholder="Hello World" pattern=[A-Za-z0-9\s?!,;:]{2,1000} value="" required
-					class="mt-2 flex h-28 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
+					<textarea id="message" name="visitor_message" placeholder="Hello World" pattern=[A-Za-z0-9\s?!,;:]{2,1000} value="" required class="mt-2 flex h-28 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</textarea>
 				</div>
-
-				<button type="submit" name="submit" class="font-bold rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">Send</button>
+					<button type="submit" name="submit" class="font-bold rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">Send</button>
+				
 			</form>
 	</main>
 </body>

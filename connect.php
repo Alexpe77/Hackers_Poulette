@@ -1,8 +1,7 @@
 <?php
-session_start();
 
 try {
-    $bdd = new PDO('mysql:host=localhost;dbname=id20943308_becode;charset=utf8', 'id20943308_alexp', 'NypenseMemeP@s7', [
+    $bdd = new PDO('mysql:host=localhost;dbname=becode;charset=utf8', 'root', '', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ
     ]);

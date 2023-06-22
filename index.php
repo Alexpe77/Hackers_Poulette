@@ -1,13 +1,8 @@
 <?php
 
-require 'connect.php';
+require 'assets/views/connect.php';
 
 if (isset($_POST['submit']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-
-	if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        echo "<script language='Javascript'>alert('Invalid CSRF token.');</script>";
-        exit;
-    }
 
 	$name = htmlspecialchars(trim($_POST['visitor_name']), ENT_QUOTES, 'UTF-8');
 	$fname = htmlspecialchars(trim($_POST['visitor_fname']), ENT_QUOTES, 'UTF-8');
@@ -42,29 +37,28 @@ if (isset($_POST['submit']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 			}
 
 			if (in_array($extension, $allowed_extensions)) {
-				if(move_uploaded_file($filetmp, $targetFile)) {
+
+				if (move_uploaded_file($filetmp, $targetFile)) {
 					echo "<script language='Javascript'>alert('File uploaded');</script>";
 					exit;
 				}
-				}
+			}
 
-				if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
-					echo "<script language='Javascript'>alert('Failed to upload the file.');</script>";
-					exit;
-				}
-			} else {
-				echo "<script language='Javascript'>alert('Please upload a file with the right extension (.jpg, .gif, .png)');</script>";
+			if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
+				echo "<script language='Javascript'>alert('Failed to upload the file.');</script>";
 				exit;
 			}
+		} else {
+			echo "<script language='Javascript'>alert('Please upload a file with the right extension (.jpg, .gif, .png)');</script>";
+			exit;
 		}
-		$sql = 'INSERT INTO poulette (name, fname, email, description, file_path) VALUES (?,?,?,?,?)';
-		$stmt = $bdd->prepare($sql);
-		$stmt->execute([$name, $fname, $email, $desc, $targetFile]);
-
-		echo "<script language='Javascript'>alert('Message send successfully.');</script>";
 	}
+	$sql = 'INSERT INTO poulette (name, fname, email, file_path, description) VALUES (?,?,?,?,?)';
+	$stmt = $bdd->prepare($sql);
+	$stmt->execute([$name, $fname, $email, $targetFile, $desc]);
 
-$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+	echo "<script language='Javascript'>alert('Message send successfully.');</script>";
+}
 
 ?>
 
@@ -75,38 +69,37 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 	<meta charset="utf-8">
 	<title>Hackers Poulette</title>
 	<script src="https://cdn.tailwindcss.com"></script>
-	<script src="./validation/script.js"></script>
+	<script src="assets/validation/script.js" defer></script>
 </head>
-
-<body class="bg-[url('../img/header.png')] flex flex-col items-center">
+<body>
+<body class="bg-[url('assets/img/header.png')] flex flex-col items-center">
 	<main>
 		<h1 class="text-white text-4xl mb-11 mt-11 text-center">Contact support</h1>
 		<div class="!z-5 relative flex flex-col rounded-[20px] max-w-[350px] md:max-w-[400px] bg-white bg-clip-border shadow-3xl
 		shadow-shadow-500 flex flex-col w-full !p-6 3xl:p-![18px] bg-white undefined">
-			<form id="contactForm" action="./contact.php" method="post" enctype="multipart/form-data">
-			<input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+			<form id="contactForm" action="index.php" method="post" enctype="multipart/form-data">
 				<div class="mb-3">
 					<label for="fname">Firstname</label>
-					<input type="text" name="visitor_fname" id="visitor_fname" minlength="2" maxlength="255" placeholder="John" pattern=[A-Z\sa-z]{2,20} value="" minlength="2" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
+					<input type="text" name="visitor_fname" id="visitor_fname" placeholder="John" pattern=[A-Z\sa-z]{2,20} value="" minlength="2" maxlength="255" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</div>
 				<div class="mb-3">
 					<label for="name">Name</label>
-					<input type="text" name="visitor_name" id="visitor_name" minlength="2" maxlength="255" placeholder="Doe" pattern=[A-Z\sa-z]{2,20} value="" minlength="2" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
+					<input type="text" name="visitor_name" id="visitor_name" placeholder="Doe" pattern=[A-Z\sa-z]{2,20} value="" minlength="2" maxlength="255" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</div>
 
 				<div class="mb-3">
 					<label for="email">Email</label>
-					<input type="text" name="visitor_email" id="visitor_email" placeholder="john.doe@email.com" value="" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
+					<input type="text" name="visitor_email" id="visitor_email" placeholder="john.doe@email.com" value="" maxlength="50" required class="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</div>
 
 				<div class="mb-3">
 					<label for="file">File</label><br>
-					<input type="file" name="file" id="file" value="" accept=".png, .jpg, .gif" class="cursor-pointer">
+					<input type="file" name="file" value="" accept=".png, .jpg, .gif" class="cursor-pointer">
 				</div>
 
 				<div class="mb-3">
 					<label for="description">Description</label><br>
-					<textarea id="visitor_message" name="visitor_message" minlength="10" maxlength="1000" placeholder="Hello World" pattern=[A-Za-z0-9\s?!,;:]{2,1000} value="" required class="mt-2 flex h-28 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
+					<textarea name="visitor_message" id="visitor_message" placeholder="Hello World" minlength="5" maxlength="1000" pattern=[A-Za-z0-9\s?!,;:]{2,1000} value="" required class="mt-2 flex h-28 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">
 				</textarea>
 				</div>
 				<button type="submit" name="submit" class="font-bold rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200">Send</button>
